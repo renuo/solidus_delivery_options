@@ -21,6 +21,9 @@ module SpreeDeliveryOptions
       Dir.glob(File.join(File.dirname(__FILE__), '../../app/controllers/**/*.rb')) do |c|
         Rails.configuration.cache_classes ? require(c) : load(c)
       end
+      Dir.glob(File.join(File.dirname(__FILE__), '../../app/helpers/**.rb')) do |c|
+        Rails.configuration.cache_classes ? require(c) : load(c)
+      end
       Dir.glob(File.join(File.dirname(__FILE__), '../../app/**/*decorator*.rb')) do |c|
         Rails.configuration.cache_classes ? require(c) : load(c)
       end
