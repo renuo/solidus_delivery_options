@@ -1,5 +1,5 @@
 Deface::Override.new(:virtual_path => "spree/taxons/show",
                      :name => "add_delivery_options_to_taxon",
                      :insert_before => "h1.taxon-title",
-                     :partial => "spree/layouts/delivery_options",
+                     :partial => "spree/taxons/delivery_options",
                      :disabled => false)
