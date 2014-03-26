@@ -45,7 +45,7 @@ function SpreeDeliveryOptions() {
       }
       $('#order_delivery_time').html(newList);
     } else {
-      $('#order_delivery_time').html("<option>No deliveries available on this date</option>");
+      $('#order_delivery_time').html("<option>No deliveries available</option>");
     }
   };
 

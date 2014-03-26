@@ -1,0 +1,17 @@
+#delivery-options-homepage
+  .row
+    .columns.seven.alpha
+      %h3 Want to know when you're getting your groceries?
+      %h5 Choose your delivery time and get it sorted now
+    .columns.five.omega
+      = form_for current_order(true) do |form|
+        .field
+          = form.label :delivery_date, "Delivery Date"
+          = form.text_field :delivery_date
+        .field
+          = form.label :delivery_time, "Delivery Time"
+          = form.select :delivery_time, JSON.parse(SpreeDeliveryOptions::Config.delivery_time_options)["monday"]
+        .field
+          = form.submit "Set Delivery Time"
+        .delivery-time-options{data: SpreeDeliveryOptions::Config.delivery_time_options}
+
