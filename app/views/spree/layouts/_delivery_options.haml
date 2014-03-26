@@ -1,10 +1,14 @@
 #delivery-options-homepage
-  .row
+  .row.success.hide
+    .columns.twelve.alpha.omega
+      %h5 Thank you. Your order has been updated!
+  .row.form
     .columns.seven.alpha
       %h3 Want to know when you're getting your groceries?
       %h5 Choose your delivery time and get it sorted now
     .columns.five.omega
-      = form_for current_order(true) do |form|
+      = form_for current_order(true), {url: api_order_url(current_order), html: {id: 'delivery-options-form'}} do |form|
+        = hidden_field_tag 'order_token', current_order.token
         .field
           = form.label :delivery_date, "Delivery Date"
           = form.text_field :delivery_date
