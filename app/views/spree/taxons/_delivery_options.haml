@@ -11,7 +11,7 @@
         = hidden_field_tag 'order_token', current_order.token
         .field
           = form.label :delivery_date, "Delivery Date"
-          = form.text_field :delivery_date
+          = form.text_field :delivery_date, value: (l(current_order.delivery_date) rescue l(Date.current))
         .field
           = form.label :delivery_time, "Delivery Time"
           = form.select :delivery_time, JSON.parse(SpreeDeliveryOptions::Config.delivery_time_options)["monday"]
