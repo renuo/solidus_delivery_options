@@ -7,6 +7,10 @@
     margin-bottom: 0;
   }
 
+  .error h5 {
+    color: red;
+  }
+
   .field {
 
     display: block;
@@ -17,12 +21,13 @@
     }
 
     input[type='text'], select {
-      width: 150px;
+      width: 120px;
     }
 
     input[type='submit'] {
       margin-top: 5px;
-      width: 230px;
+      width: 200px;
     }
+
   }
 }
