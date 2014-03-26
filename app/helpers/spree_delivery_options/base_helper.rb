@@ -13,9 +13,9 @@ module SpreeDeliveryOptions
     def next_delivery_day
       delivery_options = JSON.parse(SpreeDeliveryOptions::Config.delivery_time_options)
 
-      cutoff_time = Time.now.change(hour: SpreeDeliveryOptions::Config.delivery_cut_off_hour)
+      cutoff_time = Time.zone.now.change(hour: SpreeDeliveryOptions::Config.delivery_cut_off_hour)
 
-      current_day = Time.now > cutoff_time ? (Date.today + 2.days) : Date.tomorrow
+      current_day = Time.zone.now > cutoff_time ? (Date.current + 2.days) : (Date.current + 1.day)
       next_available_day = nil
       counter = 0
 

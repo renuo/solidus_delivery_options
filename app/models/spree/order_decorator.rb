@@ -11,7 +11,6 @@ Spree::Order.class_eval do
   end
 
   def valid_delivery_date?
-
     self.errors[:delivery_date] << 'cannot be blank' unless self.delivery_date
 
     if self.delivery_date
@@ -22,8 +21,8 @@ Spree::Order.class_eval do
         self.errors[:delivery_date] << "is not available on the selected week day."
       end
 
-      cutoff_time = Time.now.change(hour: SpreeDeliveryOptions::Config.delivery_cut_off_hour)
-      if self.delivery_date == Date.tomorrow && Time.now > (cutoff_time + 15.minutes)
+      cutoff_time = Time.zone.now.change(hour: SpreeDeliveryOptions::Config.delivery_cut_off_hour)
+      if self.delivery_date == Date.tomorrow && Time.zone.now > (cutoff_time + 15.minutes)
         self.errors[:delivery_date] << "cannot be tomorrow if the order is created after 1pm"
       end
     end
