@@ -36,16 +36,21 @@ describe Spree::Order do
 
   end
 
+  describe "delivery_date_present" do
+
+    it 'should require delivery date' do
+      order.delivery_date_present?.should == false
+      order.errors[:delivery_date].should_not be_empty
+    end
+
+  end
+
   describe "valid_delivery_date" do
 
     before :each do
       SpreeDeliveryOptions::Config.delivery_time_options = {monday: ['Between 6-7am']}.to_json
     end
 
-    it 'should require delivery date' do
-      order.valid_delivery_date?.should == false
-      order.errors[:delivery_date].should_not be_empty
-    end
 
     it 'should not be valid if delivery date is in the past' do
       order.delivery_date = Date.yesterday

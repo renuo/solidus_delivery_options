@@ -2,6 +2,8 @@ Spree::Order.class_eval do
   require 'date'
   require 'spree/order/checkout'
 
+  validate :valid_delivery_date?
+
   def valid_delivery_instructions?
     if self.delivery_instructions && self.delivery_instructions.length > 500
       self.errors[:delivery_instructions] << 'cannot be longer than 500 charachters'
@@ -10,11 +12,14 @@ Spree::Order.class_eval do
     true
   end
 
-  def valid_delivery_date?
+  def delivery_date_present?
     self.errors[:delivery_date] << 'cannot be blank' unless self.delivery_date
+    self.errors[:delivery_date].empty? ? true : false
+  end
 
+  def valid_delivery_date?
     if self.delivery_date
-      self.errors[:delivery_date] << 'cannot be today or in the past' if self.delivery_date <= Date.today
+      self.errors[:delivery_date] << 'cannot be today or in the past' if self.delivery_date <= Date.current
 
       options = delivery_time_options(self.delivery_date)
       unless options
@@ -22,7 +27,7 @@ Spree::Order.class_eval do
       end
 
       cutoff_time = Time.zone.now.change(hour: SpreeDeliveryOptions::Config.delivery_cut_off_hour)
-      if self.delivery_date == Date.tomorrow && Time.zone.now > (cutoff_time + 15.minutes)
+      if self.delivery_date == (Date.current + 1.day) && Time.zone.now > (cutoff_time + 15.minutes)
         self.errors[:delivery_date] << "cannot be tomorrow if the order is created after 1pm"
       end
     end
@@ -63,6 +68,9 @@ Spree::PermittedAttributes.checkout_attributes << :delivery_time
 Spree::PermittedAttributes.checkout_attributes << :delivery_instructions
 
 Spree::Order.state_machine.before_transition :to => :payment, :do => :valid_delivery_instructions?
+
+Spree::Order.state_machine.before_transition :to => :payment, :do => :delivery_date_present?
 Spree::Order.state_machine.before_transition :to => :payment, :do => :valid_delivery_date?
+
 Spree::Order.state_machine.before_transition :to => :payment, :do => :valid_delivery_time?
 
