@@ -44,7 +44,7 @@ function SpreeDeliveryOptions() {
       var arLen = options.length;
       var newList = "";
       for ( var i=0, len=arLen; i<len; ++i ){
-        newList = newList + '<option>' + options[i]+'</option>';
+        newList = newList + "<option value='" + options[i] + "'>" + options[i]+'</option>';
       }
       $('#order_delivery_time').html(newList);
     } else {

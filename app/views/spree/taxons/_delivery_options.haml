@@ -1,22 +1,27 @@
 #delivery-options-homepage
-  .row.success.hide
-    .columns.twelve.alpha.omega
-      %h5 Thank you. Your order has been updated!
-  .row.form
-    .columns.seven.alpha
-      %h3 Want to know when you're getting your groceries?
-      %h5 Choose your delivery time and get it sorted now
-    .columns.four
-      = form_for current_order(true), {url: api_order_url(current_order), html: {id: 'delivery-options-form'}} do |form|
-        = hidden_field_tag 'order_token', current_order.token
-        .field
-          = form.label :delivery_date, "Delivery Date"
-          = form.text_field :delivery_date, value: (l(current_order.delivery_date) rescue l(Date.current))
-        .field
-          = form.label :delivery_time, "Delivery Time"
-          = form.select :delivery_time, JSON.parse(SpreeDeliveryOptions::Config.delivery_time_options)["monday"]
-        .field
-          = form.submit "Set Delivery Time"
-        .delivery-time-options{data: SpreeDeliveryOptions::Config.delivery_time_options}
-    .columns.four.omega
-      .error.hide
+  - order = current_order(true)
+  - if order.delivery_date? && order.delivery_time
+    .row.success
+      .columns.sixteen.alpha.omega
+        %h5
+          = "Your order is scheduled for #{order.delivery_date.strftime('%A, %d %b')} from #{order.delivery_time}."
+          You can still change this value at the checkout if needed.
+  - else
+    .row.form
+      .columns.seven.alpha
+        %h3 Want to know when you're getting your groceries?
+        %h5 Choose your delivery time and get it sorted now
+      .columns.four
+        = form_for order, {url: api_order_url(order), html: {id: 'delivery-options-form'}} do |form|
+          = hidden_field_tag 'order_token', order.token
+          .field
+            = form.label :delivery_date, "Delivery Date"
+            = form.text_field :delivery_date, value: (l(order.delivery_date) rescue l(Date.current))
+          .field
+            = form.label :delivery_time, "Delivery Time"
+            = form.select :delivery_time, JSON.parse(SpreeDeliveryOptions::Config.delivery_time_options)["monday"]
+          .field
+            = form.submit "Set Delivery Time"
+          .delivery-time-options{data: SpreeDeliveryOptions::Config.delivery_time_options}
+      .columns.four.omega
+        .error.hide
