@@ -14,7 +14,7 @@ function SpreeDeliveryOptionsForm() {
          formData,
          function(data) {
            if (data.delivery_date !== null) {
-             that.showSuccessMessage();
+             location.reload();
            } else {
              that.showErrorMessage("Please enter a valid date.");
            }
@@ -28,11 +28,6 @@ function SpreeDeliveryOptionsForm() {
            }
          });
      });
-  };
-
-  this.showSuccessMessage = function() {
-    $('#delivery-options-homepage .form').hide();
-    $('#delivery-options-homepage .success').show();
   };
 
   this.showErrorMessage = function(message) {
