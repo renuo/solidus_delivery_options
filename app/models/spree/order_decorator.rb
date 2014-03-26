@@ -3,6 +3,7 @@ Spree::Order.class_eval do
   require 'spree/order/checkout'
 
   validate :valid_delivery_date?
+  validate :valid_delivery_time?
 
   def valid_delivery_instructions?
     if self.delivery_instructions && self.delivery_instructions.length > 500
@@ -33,6 +34,11 @@ Spree::Order.class_eval do
     end
 
     self.errors[:delivery_date].empty? ? true : false
+  end
+
+  def delivery_time_present?
+    self.errors[:delivery_time] << 'cannot be blank' unless self.delivery_time
+    self.errors[:delivery_time].empty? ? true : false
   end
 
   def valid_delivery_time?
@@ -72,5 +78,6 @@ Spree::Order.state_machine.before_transition :to => :payment, :do => :valid_deli
 Spree::Order.state_machine.before_transition :to => :payment, :do => :delivery_date_present?
 Spree::Order.state_machine.before_transition :to => :payment, :do => :valid_delivery_date?
 
+Spree::Order.state_machine.before_transition :to => :payment, :do => :delivery_time_present?
 Spree::Order.state_machine.before_transition :to => :payment, :do => :valid_delivery_time?
 

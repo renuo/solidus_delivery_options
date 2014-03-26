@@ -96,17 +96,21 @@ describe Spree::Order do
 
   end
 
-  describe 'valid_delivery_time' do
-
-    before :each do
-      SpreeDeliveryOptions::Config.delivery_time_options = {monday: ['Between 6-7am']}.to_json
-    end
+  describe 'delivery_time_present' do
 
     it 'should require delivery time' do
       order.delivery_date = Date.today
 
-      order.valid_delivery_time?.should == false
+      order.delivery_time_present?.should == false
       order.errors[:delivery_time].should_not be_empty
+    end
+
+  end
+
+  describe 'valid_delivery_time' do
+
+    before :each do
+      SpreeDeliveryOptions::Config.delivery_time_options = {monday: ['Between 6-7am']}.to_json
     end
 
     it 'should require a valid option for delivery time' do
