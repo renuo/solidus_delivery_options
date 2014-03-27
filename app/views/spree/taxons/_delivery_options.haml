@@ -19,7 +19,7 @@
             = hidden_field_tag 'order_token', order.token
             .field
               = form.label :delivery_date, "Delivery Date"
-              = form.text_field :delivery_date, value: (l(order.delivery_date) rescue l(Date.current))
+              = form.text_field :delivery_date, value: (l(order.delivery_date) rescue l(Date.current + 1))
             .field
               = form.label :delivery_time, "Delivery Time"
               = form.select :delivery_time, JSON.parse(SpreeDeliveryOptions::Config.delivery_time_options)["monday"]
@@ -27,4 +27,7 @@
               = form.submit "Set Delivery Time"
             .delivery-time-options{data: SpreeDeliveryOptions::Config.delivery_time_options}
         .columns.four.omega
+          %h5 
+            The next available delivery slot is
+            = next_delivery_slot
           .error.hide
