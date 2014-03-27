@@ -41,10 +41,15 @@ function SpreeDeliveryOptions() {
 
   this.populate_delivery_time = function(options) {
     if (options) {
+      var selected_delivery_time = $('.selected-delivery-time').attr("data");
       var arLen = options.length;
       var newList = "";
       for ( var i=0, len=arLen; i<len; ++i ){
-        newList = newList + "<option value='" + options[i] + "'>" + options[i]+'</option>';
+        if (options[i] == selected_delivery_time) {
+          newList = newList + '<option selected=true value="' + options[i] + '">' + options[i]+'</option>';
+        } else {
+          newList = newList + "<option value='" + options[i] + "'>" + options[i]+'</option>';
+        }
       }
       $('#order_delivery_time').html(newList);
     } else {
