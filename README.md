@@ -18,6 +18,7 @@ Features
 * Allows admin to filter orders by delivery date and time (date range).
 * Allows admin to sort orders by delivery date and time.
 * Adds delivery date column to orders index page table.
+* Adds delivery options banner to taxons page (configurable)
 
 
 Installation
