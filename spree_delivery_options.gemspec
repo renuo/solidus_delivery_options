@@ -2,7 +2,7 @@
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'spree_delivery_options'
-  s.version     = '2.2.1'
+  s.version     = '2.2.2'
   s.summary     = 'Adds delivery date and time during checkout'
   s.description = ''
   s.required_ruby_version = '>= 2.0.0'
