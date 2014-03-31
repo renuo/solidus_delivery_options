@@ -19,7 +19,7 @@ Spree::Order.class_eval do
   end
 
   def valid_delivery_date?
-    if self.delivery_date
+    if self.delivery_date && self.delivery_date_changed?
       self.errors[:delivery_date] << 'cannot be today or in the past' if self.delivery_date <= Date.current
 
       options = delivery_time_options(self.delivery_date)

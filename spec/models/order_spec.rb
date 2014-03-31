@@ -51,7 +51,6 @@ describe Spree::Order do
       SpreeDeliveryOptions::Config.delivery_time_options = {monday: ['Between 6-7am']}.to_json
     end
 
-
     it 'should not be valid if delivery date is in the past' do
       order.delivery_date = Date.yesterday
       order.valid_delivery_date?.should == false
