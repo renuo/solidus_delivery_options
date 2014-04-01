@@ -1,6 +1,6 @@
 - if SpreeDeliveryOptions::Config.show_homepage_form
   #delivery-options-homepage
-    - order = current_order(true)
+    - order = current_order(create_order_if_necessary: true)
     - if order.delivery_date? && order.delivery_time
       .row.success
         .columns.sixteen.alpha.omega
