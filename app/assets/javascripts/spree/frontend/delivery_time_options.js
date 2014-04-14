@@ -40,7 +40,7 @@ function SpreeDeliveryOptions() {
   };
 
   this.populate_delivery_time = function(options) {
-    if (options) {
+    if (options && options.length > 0) {
       var selected_delivery_time = $('.selected-delivery-time').attr("data");
       var arLen = options.length;
       var newList = "";
