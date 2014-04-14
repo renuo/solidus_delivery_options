@@ -158,6 +158,8 @@ describe Spree::Order do
         order.delivery_date =  Date.parse('03/03/2014')
         order.delivery_time = 'Between 6-7am'
 
+        order.valid_delivery_date?.should == false
+        order.errors[:delivery_date].should_not be_empty
         order.valid_delivery_time?.should == false
         order.errors[:delivery_time].should_not be_empty
         Timecop.return

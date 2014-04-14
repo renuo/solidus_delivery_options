@@ -23,8 +23,8 @@ Spree::Order.class_eval do
       self.errors[:delivery_date] << 'cannot be today or in the past' if self.delivery_date <= Date.current
 
       options = delivery_time_options(self.delivery_date)
-      unless options
-        self.errors[:delivery_date] << "is not available on the selected week day."
+      unless options && !options.empty?
+        self.errors[:delivery_date] << "is not available on the selected date."
       end
 
       cutoff_time = Time.zone.now.change(hour: SpreeDeliveryOptions::Config.delivery_cut_off_hour)
