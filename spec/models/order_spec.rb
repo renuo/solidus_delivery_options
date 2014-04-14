@@ -6,6 +6,7 @@ describe Spree::Order do
 
   before :each do
     SpreeDeliveryOptions::Config.delivery_time_options = {monday: ['Between 6-7am']}.to_json
+    SpreeDeliveryOptions::Config.delivery_cut_off_hour = 13
   end
 
   describe 'valid_delivery_instructions' do
@@ -64,7 +65,7 @@ describe Spree::Order do
     end
 
     it 'should be valid if delivery date is tomorrow and it is past the cutoff time by less than 15 min' do
-      time_now = DateTime.parse("17/11/2013 #{SpreeDeliveryOptions::Config.delivery_cut_off_hour}:14 +1100")
+      time_now = DateTime.parse("17/11/2013 #{SpreeDeliveryOptions::Config.delivery_cut_off_hour}:14 +1100", "%d/%m/%Y %H:%M %z")
       Timecop.freeze(time_now)
 
       order.delivery_date = '18/11/2013'
@@ -74,7 +75,7 @@ describe Spree::Order do
     end
 
     it 'should not be valid if delivery date is tomorrow and it is past the cutoff time + 15 min' do
-      time_now = DateTime.parse("17/11/2013 #{SpreeDeliveryOptions::Config.delivery_cut_off_hour}:16 +1100")
+      time_now = DateTime.parse("17/11/2013 #{SpreeDeliveryOptions::Config.delivery_cut_off_hour}:16 +1100", "%d/%m/%Y %H:%M %z")
       Timecop.freeze(time_now)
 
       order.delivery_date = '18/11/2013'
@@ -134,11 +135,23 @@ describe Spree::Order do
 
     describe "overriding delivery day with specific date" do
 
-      before :each do
+      it 'should not allow delivery time to be in an invalid slot for the delivery day' do
         SpreeDeliveryOptions::Config.delivery_time_options = {monday: ['Between 6-7am'], '03/03/2014' => ['Between 9-12am']}.to_json
+
+        time_now = DateTime.parse("01/03/2014")
+        Timecop.freeze(time_now)
+
+        order.delivery_date =  Date.parse('03/03/2014')
+        order.delivery_time = 'Between 6-7am'
+
+        order.valid_delivery_time?.should == false
+        order.errors[:delivery_time].should_not be_empty
+        Timecop.return
       end
 
-      it 'should not allow delivery time to be in an invalid slot for the delivery day' do
+      it 'should not allow delivery time to be in date with empty options' do
+        SpreeDeliveryOptions::Config.delivery_time_options = {monday: ['Between 6-7am'], '03/03/2014' => []}.to_json
+
         time_now = DateTime.parse("01/03/2014")
         Timecop.freeze(time_now)
 

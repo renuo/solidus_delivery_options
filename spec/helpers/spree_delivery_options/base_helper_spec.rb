@@ -21,12 +21,12 @@ describe SpreeDeliveryOptions::BaseHelper do
     end
 
     it 'should return the day before if delivery date is set' do
-      SpreeDeliveryOptions::Config.delivery_cut_off_hour = 12
+      SpreeDeliveryOptions::Config.delivery_cut_off_hour = 13
       order.delivery_date = Date.parse('23/04/2014')
 
       time_now = DateTime.parse("20/03/2013")
       Timecop.freeze(time_now)
-      helper.current_order_cutoff_time.should == 'Tuesday, 22 Apr before 12pm'
+      helper.current_order_cutoff_time.should == 'Tuesday, 22 Apr before  1pm'
       Timecop.return
     end
 
