@@ -26,11 +26,14 @@ describe SpreeDeliveryOptions::BaseHelper do
       helper.current_order_cutoff_time.should be_nil
     end
 
-    it 'should return nil if delivery time is invalid'
+    it 'should return nil if delivery time is invalid' do
+      order.delivery_date = Date.parse('23/04/2014')
+      order.delivery_time = "crazy!" 
+      helper.current_order_cutoff_time.should be_nil
+    end
 
     it 'should return the correct delivery group cut off time depending on the delivery time' do
-      SpreeDeliveryOptions::Config.delivery_cut_off_time = {morning: {cutoff_time: "13:15"}, evening: {cutoff_time: "20:00"}}.to_json
-      SpreeDeliveryOptions::Config.delivery_time_options = {morning: {monday: ['Between 6-7am']}, evening: {monday: ['6pm to 7:30pm']}}.to_json
+      SpreeDeliveryOptions::Config.delivery_time_options = {"13:15" => {monday: ['6am to 7:30am']}, "20:00" => {monday: ['6pm to 7:30pm']}}.to_json
 
       order.delivery_date = Date.parse('21/04/2014')
       order.delivery_time = '6pm to 7:30pm'
@@ -42,8 +45,7 @@ describe SpreeDeliveryOptions::BaseHelper do
     end
 
     it 'should return the latest one if time is in both' do
-      SpreeDeliveryOptions::Config.delivery_cut_off_time = {morning: {cutoff_time: "13:15"}, evening: {cutoff_time: "20:00"}}.to_json
-      SpreeDeliveryOptions::Config.delivery_time_options = {morning: {monday: ['6pm to 7:30pm']}, evening: {monday: ['6pm to 7:30pm']}}.to_json
+      SpreeDeliveryOptions::Config.delivery_time_options = {"13:15" => {monday: ['6pm to 7:30pm']}, "20:00" => {monday: ['6pm to 7:30pm']}}.to_json
 
       order.delivery_date = Date.parse('21/04/2014')
       order.delivery_time = '6pm to 7:30pm'
@@ -58,50 +60,43 @@ describe SpreeDeliveryOptions::BaseHelper do
 
   describe 'next delivery slot' do
 
-    it 'should return first slot for tomorrow morning if its before cutoff time' do
-      SpreeDeliveryOptions::Config.delivery_cut_off_time = {morning: {cutoff_time: "13:15"}, evening: {cutoff_time: "20:00"}}.to_json
-      SpreeDeliveryOptions::Config.delivery_time_options = {morning: {tuesday: ['6am to 7:30am']}, evening: {tuesday: ['6pm to 7:30pm']}}.to_json
+    before :each do
+      SpreeDeliveryOptions::Config.delivery_time_options = {"13:15" => {tuesday: ['6am to 7:30am'], wednesday: ['6am to 7:30am']}, "20:00" => {tuesday: ['6pm to 7:30pm']}}.to_json
+    end
 
+    after :each do
+      Timecop.return
+    end
+
+    it 'should return first slot for tomorrow morning if its before cutoff time' do
       time_now = DateTime.parse("10/03/2014 12:00 +1100")
       Timecop.freeze(time_now)
 
       helper.next_delivery_slot.should == 'Tuesday between 6am to 7:30am'
-      Timecop.return
     end
 
     it 'should return first slot for tomorrow evening if its before evening cutoff time' do
-      SpreeDeliveryOptions::Config.delivery_cut_off_time = {morning: {cutoff_time: "13:15"}, evening: {cutoff_time: "20:00"}}.to_json
-      SpreeDeliveryOptions::Config.delivery_time_options = {morning: {tuesday: ['6am to 7:30am']}, evening: {tuesday: ['6pm to 7:30pm']}}.to_json
-
       time_now = DateTime.parse("10/03/2014 14:00 +1100")
       Timecop.freeze(time_now)
 
       helper.next_delivery_slot.should == 'Tuesday between 6pm to 7:30pm'
-      Timecop.return
     end
 
     it 'should return the day after tomorrow morning if its after evening cutoff time' do
-      SpreeDeliveryOptions::Config.delivery_cut_off_time = {morning: {cutoff_time: "13:15"}, evening: {cutoff_time: "20:00"}}.to_json
-      SpreeDeliveryOptions::Config.delivery_time_options = {morning: {tuesday: ['6am to 7:30am'], wednesday: ['6am to 7:30am']}, evening: {tuesday: ['6pm to 7:30pm'], wednesday: ['6pm to 7:30pm']}}.to_json
       time_now = DateTime.parse("10/03/2014 20:01 +1100")
       Timecop.freeze(time_now)
 
       helper.next_delivery_slot.should == 'Wednesday between 6am to 7:30am'
-      Timecop.return
     end
 
     it 'should skip day if deliveries are not available' do
-      SpreeDeliveryOptions::Config.delivery_cut_off_time = {morning: {cutoff_time: "13:15"}, evening: {cutoff_time: "20:00"}}.to_json
-      SpreeDeliveryOptions::Config.delivery_time_options = {morning: {tuesday: ['6am to 7:30am'], wednesday: ['6am to 7:30am']}, evening: {tuesday: ['6pm to 7:30pm'], wednesday: ['6pm to 7:30pm']}}.to_json
       time_now = DateTime.parse("13/03/2014 12:00 +1100")
       Timecop.freeze(time_now)
 
       helper.next_delivery_slot.should == 'Tuesday between 6am to 7:30am'
-      Timecop.return
     end
 
     it 'should return nil if no delivery times are available' do
-      SpreeDeliveryOptions::Config.delivery_cut_off_time = {morning: {cutoff_time: "13:15"}, evening: {cutoff_time: "20:00"}}.to_json
       SpreeDeliveryOptions::Config.delivery_time_options = {}.to_json
       time_now = DateTime.parse("13/03/2014 12:00 +1100")
       Timecop.freeze(time_now)
