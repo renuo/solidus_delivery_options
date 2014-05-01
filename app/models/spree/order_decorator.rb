@@ -2,7 +2,7 @@ Spree::Order.class_eval do
   require 'date'
   require 'spree/order/checkout'
 
-  include SpreeDeliveryOptions::CutOffTimeParser
+  include SpreeDeliveryOptions::DeliveryOptionsService
 
   validate :valid_delivery_options?
 
@@ -34,10 +34,6 @@ Spree::Order.class_eval do
       else
         self.errors[:delivery_date] << "is not available on the selected date."
       end
-
-      if self.delivery_date == (Date.current + 1.day) && Time.zone.now > (cutoff_time)
-        self.errors[:delivery_date] << "cannot be tomorrow if the order is created after 1pm"
-      end
     end
 
     (self.errors[:delivery_date].empty? && self.errors[:delivery_time].empty?) ? true : false
@@ -47,6 +43,7 @@ Spree::Order.class_eval do
 
   def delivery_time_options(date)
     date_string = date.strftime("%d/%m/%Y")
+
     return delivery_options[date_string] if delivery_options[date_string]
 
     week_day = date.strftime("%A")
@@ -54,7 +51,24 @@ Spree::Order.class_eval do
   end
 
   def delivery_options
-    @delivery_options ||= JSON.parse(SpreeDeliveryOptions::Config.delivery_time_options)
+    delivery_group = current_delivery_group
+    return {} unless delivery_group
+    JSON.parse(SpreeDeliveryOptions::Config.delivery_time_options)[delivery_group]
+  end
+
+  def current_delivery_group
+    cutoff_groups = JSON.parse(SpreeDeliveryOptions::Config.delivery_cut_off_time)
+    cutoff_groups.each do |group|
+      return group["id"] if Time.zone.now < cutoff_time(group["cutoff_time"])
+    end
+    nil
+  end
+
+  def cutoff_time(time_string)
+    cutoff_hour = time_string.split(':')[0].to_i
+    cutoff_minute = time_string.split(':')[1].to_i
+
+    Time.zone.now.change(hour: cutoff_hour, min: cutoff_minute)
   end
 
 end
