@@ -44,24 +44,17 @@ Spree::Order.class_eval do
   def delivery_time_options(date)
     date_string = date.strftime("%d/%m/%Y")
 
-    return delivery_options[date_string] if delivery_options[date_string]
+    return current_delivery_options[date_string] if current_delivery_options[date_string]
 
     week_day = date.strftime("%A")
-    delivery_options[week_day.downcase]
+    current_delivery_options[week_day.downcase]
   end
 
-  def delivery_options
-    delivery_group = current_delivery_group
-    return {} unless delivery_group
-    JSON.parse(SpreeDeliveryOptions::Config.delivery_time_options)[delivery_group]
-  end
-
-  def current_delivery_group
-    cutoff_groups = JSON.parse(SpreeDeliveryOptions::Config.delivery_cut_off_time)
-    cutoff_groups.each do |group|
-      return group["id"] if Time.zone.now < cutoff_time(group["cutoff_time"])
+  def current_delivery_options
+    delivery_groups.each do |cutoff_time, options|
+      return options if Time.zone.now.strftime("%H:%M") < cutoff_time
     end
-    nil
+    {} 
   end
 
   def cutoff_time(time_string)
