@@ -6,7 +6,7 @@ describe Spree::Order do
 
   before :each do
     SpreeDeliveryOptions::Config.delivery_time_options = {monday: ['Between 6-7am']}.to_json
-    SpreeDeliveryOptions::Config.delivery_cut_off_hour = 13
+    SpreeDeliveryOptions::Config.delivery_cut_off_time = "13:15"
   end
 
   describe 'valid_delivery_instructions' do
@@ -50,6 +50,7 @@ describe Spree::Order do
 
     before :each do
       SpreeDeliveryOptions::Config.delivery_time_options = {monday: ['Between 6-7am']}.to_json
+      SpreeDeliveryOptions::Config.delivery_cut_off_time = "13:15"
     end
 
     it 'should not be valid if delivery date is in the past' do
@@ -65,7 +66,7 @@ describe Spree::Order do
     end
 
     it 'should be valid if delivery date is tomorrow and it is past the cutoff time by less than 15 min' do
-      time_now = DateTime.parse("17/11/2013 #{SpreeDeliveryOptions::Config.delivery_cut_off_hour}:14 +1100", "%d/%m/%Y %H:%M %z")
+      time_now = DateTime.parse("17/11/2013 13:14 +1100", "%d/%m/%Y %H:%M %z")
       Timecop.freeze(time_now)
 
       order.delivery_date = '18/11/2013'
@@ -75,7 +76,7 @@ describe Spree::Order do
     end
 
     it 'should not be valid if delivery date is tomorrow and it is past the cutoff time + 15 min' do
-      time_now = DateTime.parse("17/11/2013 #{SpreeDeliveryOptions::Config.delivery_cut_off_hour}:16 +1100", "%d/%m/%Y %H:%M %z")
+      time_now = DateTime.parse("17/11/2013 13:16 +1100", "%d/%m/%Y %H:%M %z")
       Timecop.freeze(time_now)
 
       order.delivery_date = '18/11/2013'
@@ -85,7 +86,7 @@ describe Spree::Order do
     end
 
     it 'should be valid if delivery date is tomorrow but is before the cutoff time' do
-      time_now = DateTime.parse("17/11/2013 #{SpreeDeliveryOptions::Config.delivery_cut_off_hour-1}:59 +1100")
+      time_now = DateTime.parse("17/11/2013 13:14 +1100")
       Timecop.freeze(time_now)
 
       order.delivery_date = '18/11/2013'

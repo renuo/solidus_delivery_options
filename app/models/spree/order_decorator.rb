@@ -2,6 +2,8 @@ Spree::Order.class_eval do
   require 'date'
   require 'spree/order/checkout'
 
+  include SpreeDeliveryOptions::CutOffTimeParser
+
   validate :valid_delivery_date?
   validate :valid_delivery_time?
 
@@ -27,8 +29,7 @@ Spree::Order.class_eval do
         self.errors[:delivery_date] << "is not available on the selected date."
       end
 
-      cutoff_time = Time.zone.now.change(hour: SpreeDeliveryOptions::Config.delivery_cut_off_hour)
-      if self.delivery_date == (Date.current + 1.day) && Time.zone.now > (cutoff_time + 15.minutes)
+      if self.delivery_date == (Date.current + 1.day) && Time.zone.now > (cutoff_time)
         self.errors[:delivery_date] << "cannot be tomorrow if the order is created after 1pm"
       end
     end

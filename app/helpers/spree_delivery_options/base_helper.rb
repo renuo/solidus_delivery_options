@@ -1,10 +1,11 @@
 module SpreeDeliveryOptions
   module BaseHelper
 
+    include CutOffTimeParser
+
     def current_order_cutoff_time
       return nil unless (current_order && current_order.delivery_date)
       
-      cutoff_time = Time.zone.now.change(hour: SpreeDeliveryOptions::Config.delivery_cut_off_hour)
       cutoff_date = current_order.delivery_date - 1.day
       "#{cutoff_date.strftime('%A, %d %b')} before #{cutoff_time.strftime("%l%P")}"
     end
@@ -20,8 +21,6 @@ module SpreeDeliveryOptions
 
     def next_delivery_day
       delivery_options = JSON.parse(SpreeDeliveryOptions::Config.delivery_time_options)
-
-      cutoff_time = Time.zone.now.change(hour: SpreeDeliveryOptions::Config.delivery_cut_off_hour)
 
       current_day = Time.zone.now > cutoff_time ? (Date.current + 2.days) : (Date.current + 1.day)
       next_available_day = nil
