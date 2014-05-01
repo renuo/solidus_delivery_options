@@ -1,6 +1,6 @@
 module SpreeDeliveryOptions
   module CutOffTimeParser
-    
+
     def cutoff_time
       cutoff_hour = SpreeDeliveryOptions::Config.delivery_cut_off_time.split(':')[0].to_i
       cutoff_minute = SpreeDeliveryOptions::Config.delivery_cut_off_time.split(':')[1].to_i

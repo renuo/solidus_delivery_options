@@ -4,8 +4,7 @@ Spree::Order.class_eval do
 
   include SpreeDeliveryOptions::CutOffTimeParser
 
-  validate :valid_delivery_date?
-  validate :valid_delivery_time?
+  validate :valid_delivery_options?
 
   def valid_delivery_instructions?
     if self.delivery_instructions && self.delivery_instructions.length > 500
@@ -20,12 +19,19 @@ Spree::Order.class_eval do
     self.errors[:delivery_date].empty? ? true : false
   end
 
-  def valid_delivery_date?
-    if self.delivery_date && self.delivery_date_changed?
+  def delivery_time_present?
+    self.errors[:delivery_time] << 'cannot be blank' unless self.delivery_time
+    self.errors[:delivery_time].empty? ? true : false
+  end
+
+  def valid_delivery_options?
+    if (self.delivery_date && self.delivery_date_changed?) && (self.delivery_time && self.delivery_time_changed?)
       self.errors[:delivery_date] << 'cannot be today or in the past' if self.delivery_date <= Date.current
 
       options = delivery_time_options(self.delivery_date)
-      unless options && !options.empty?
+      if options
+        self.errors[:delivery_time] << 'is invalid' unless options.include?(self.delivery_time)
+      else
         self.errors[:delivery_date] << "is not available on the selected date."
       end
 
@@ -34,24 +40,7 @@ Spree::Order.class_eval do
       end
     end
 
-    self.errors[:delivery_date].empty? ? true : false
-  end
-
-  def delivery_time_present?
-    self.errors[:delivery_time] << 'cannot be blank' unless self.delivery_time
-    self.errors[:delivery_time].empty? ? true : false
-  end
-
-  def valid_delivery_time?
-    return unless self.delivery_date
-
-    self.errors[:delivery_time] << 'cannot be blank' unless self.delivery_time
-
-    if self.delivery_time
-      self.errors[:delivery_time] << 'is invalid' unless (delivery_time_options(self.delivery_date) && delivery_time_options(self.delivery_date).include?(self.delivery_time))
-    end
-
-    self.errors[:delivery_time].empty? ? true : false
+    (self.errors[:delivery_date].empty? && self.errors[:delivery_time].empty?) ? true : false
   end
 
   private
@@ -77,8 +66,5 @@ Spree::PermittedAttributes.checkout_attributes << :delivery_instructions
 Spree::Order.state_machine.before_transition :to => :payment, :do => :valid_delivery_instructions?
 
 Spree::Order.state_machine.before_transition :to => :payment, :do => :delivery_date_present?
-Spree::Order.state_machine.before_transition :to => :payment, :do => :valid_delivery_date?
-
 Spree::Order.state_machine.before_transition :to => :payment, :do => :delivery_time_present?
-Spree::Order.state_machine.before_transition :to => :payment, :do => :valid_delivery_time?
-
+Spree::Order.state_machine.before_transition :to => :payment, :do => :valid_delivery_options?

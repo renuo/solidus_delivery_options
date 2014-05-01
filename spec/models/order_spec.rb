@@ -46,57 +46,6 @@ describe Spree::Order do
 
   end
 
-  describe "valid_delivery_date" do
-
-    before :each do
-      SpreeDeliveryOptions::Config.delivery_time_options = {monday: ['Between 6-7am']}.to_json
-      SpreeDeliveryOptions::Config.delivery_cut_off_time = "13:15"
-    end
-
-    it 'should not be valid if delivery date is in the past' do
-      order.delivery_date = Date.yesterday
-      order.valid_delivery_date?.should == false
-      order.errors[:delivery_date].should_not be_empty
-    end
-
-    it 'should not be valid if delivery date is today' do
-      order.delivery_date = Date.today
-      order.valid_delivery_date?.should == false
-      order.errors[:delivery_date].should_not be_empty
-    end
-
-    it 'should be valid if delivery date is tomorrow and it is past the cutoff time by less than 15 min' do
-      time_now = DateTime.parse("17/11/2013 13:14 +1100", "%d/%m/%Y %H:%M %z")
-      Timecop.freeze(time_now)
-
-      order.delivery_date = '18/11/2013'
-      order.valid_delivery_date?.should == true
-      order.errors[:delivery_date].should be_empty
-      Timecop.return
-    end
-
-    it 'should not be valid if delivery date is tomorrow and it is past the cutoff time + 15 min' do
-      time_now = DateTime.parse("17/11/2013 13:16 +1100", "%d/%m/%Y %H:%M %z")
-      Timecop.freeze(time_now)
-
-      order.delivery_date = '18/11/2013'
-      order.valid_delivery_date?.should == false
-      order.errors[:delivery_date].should_not be_empty
-      Timecop.return
-    end
-
-    it 'should be valid if delivery date is tomorrow but is before the cutoff time' do
-      time_now = DateTime.parse("17/11/2013 13:14 +1100")
-      Timecop.freeze(time_now)
-
-      order.delivery_date = '18/11/2013'
-      order.valid_delivery_date?
-      order.errors[:delivery_date].should be_empty
-      Timecop.return
-    end
-
-  end
-
   describe 'delivery_time_present' do
 
     it 'should require delivery time' do
@@ -108,33 +57,102 @@ describe Spree::Order do
 
   end
 
-  describe 'valid_delivery_time' do
+  describe "valid_delivery_options?" do
 
     before :each do
       SpreeDeliveryOptions::Config.delivery_time_options = {monday: ['Between 6-7am']}.to_json
     end
 
-    it 'should require a valid option for delivery time' do
-      order.delivery_date = Date.today
-
-      order.delivery_time = 'crazy times!'
-      order.valid_delivery_time?.should == false
-      order.errors[:delivery_time].should_not be_empty
-    end
-
-    it 'should allow delivery time to be in a valid delivery day' do
-      order.delivery_date =  DateTime.now.next_week.next_day(0)
-      order.valid_delivery_date?#.should == true
-      order.errors[:delivery_date].should be_empty
-    end
-
-    it 'should not allow delivery time to be in a non delivery day' do
-      order.delivery_date =  DateTime.now.next_week.next_day(1)
-      order.valid_delivery_date?.should == false
+    it 'should not be valid if delivery date is in the past' do
+      order.delivery_date = Date.yesterday
+      order.delivery_time = 'Between 6-7am'
+      order.valid_delivery_options?.should == false
       order.errors[:delivery_date].should_not be_empty
     end
 
-    describe "overriding delivery day with specific date" do
+    it 'should not be valid if delivery date is today' do
+      order.delivery_date = Date.today
+      order.delivery_time = 'Between 6-7am'
+      order.valid_delivery_options?.should == false
+      order.errors[:delivery_date].should_not be_empty
+    end
+
+    it 'should be valid if delivery date is tomorrow and it is before the cutoff time' do
+      time_now = DateTime.parse("17/11/2013 13:14 +1100", "%d/%m/%Y %H:%M %z")
+      Timecop.freeze(time_now)
+
+      order.delivery_date = '18/11/2013'
+      order.delivery_time = 'Between 6-7am'
+
+      order.valid_delivery_options?.should == true
+      order.errors[:delivery_date].should be_empty
+      Timecop.return
+    end
+
+    it 'should be valid if delivery date is tomorrow but is before the cutoff time' do
+      time_now = DateTime.parse("17/11/2013 13:16 +1100", "%d/%m/%Y %H:%M %z")
+      Timecop.freeze(time_now)
+
+      order.delivery_date = '18/11/2013'
+      order.delivery_time = 'Between 6-7am'
+
+      order.valid_delivery_options?.should == false
+      order.errors[:delivery_date].should_not be_empty
+      Timecop.return
+    end
+
+    context 'delivery time' do
+
+      before :each do
+        SpreeDeliveryOptions::Config.delivery_time_options = {monday: ['Between 6-7am']}.to_json
+      end
+
+      it 'should require a valid option for delivery time' do
+        order.delivery_date = Date.today
+
+        order.delivery_time = 'crazy times!'
+        order.valid_delivery_options?.should == false
+        order.errors[:delivery_date].should_not be_empty
+      end
+
+      it 'should allow valid delivery time' do
+        time_now = DateTime.parse("05/04/2014 10:00 +1100", "%d/%m/%Y %H:%M %z")
+        Timecop.freeze(time_now)
+
+        order.delivery_date = Date.parse('07/04/2014')
+        order.delivery_time = 'Between 6-7am'
+        
+        order.valid_delivery_options?.should == true
+        Timecop.return
+      end
+
+      it 'should not allow invalid delivery time for the date' do
+        time_now = DateTime.parse("05/04/2014 10:00 +1100", "%d/%m/%Y %H:%M %z")
+        Timecop.freeze(time_now)
+
+        order.delivery_date = Date.parse('07/04/2014')
+        order.delivery_time = '6am to 7:30am'
+
+        order.valid_delivery_options?.should == false
+        order.errors[:delivery_time].should_not be_empty
+        Timecop.return
+      end
+
+      it 'should not allow date without delivery time' do
+        time_now = DateTime.parse("05/04/2014 10:00 +1100", "%d/%m/%Y %H:%M %z")
+        Timecop.freeze(time_now)
+
+        order.delivery_date = Date.parse('08/04/2014')
+        order.delivery_time = 'Between 6-7am'
+        
+        order.valid_delivery_options?.should == false
+        order.errors[:delivery_date].should_not be_empty
+        Timecop.return
+      end
+
+    end
+
+    context "overriding delivery day with specific date" do
 
       it 'should not allow delivery time to be in an invalid slot for the delivery day' do
         SpreeDeliveryOptions::Config.delivery_time_options = {monday: ['Between 6-7am'], '03/03/2014' => ['Between 9-12am']}.to_json
@@ -145,7 +163,7 @@ describe Spree::Order do
         order.delivery_date =  Date.parse('03/03/2014')
         order.delivery_time = 'Between 6-7am'
 
-        order.valid_delivery_time?.should == false
+        order.valid_delivery_options?.should == false
         order.errors[:delivery_time].should_not be_empty
         Timecop.return
       end
@@ -159,35 +177,9 @@ describe Spree::Order do
         order.delivery_date =  Date.parse('03/03/2014')
         order.delivery_time = 'Between 6-7am'
 
-        order.valid_delivery_date?.should == false
-        order.errors[:delivery_date].should_not be_empty
-        order.valid_delivery_time?.should == false
+        order.valid_delivery_options?.should == false
         order.errors[:delivery_time].should_not be_empty
         Timecop.return
-      end
-
-    end
-
-    describe "validating delivery time in specific week day" do
-
-      before :each do
-        SpreeDeliveryOptions::Config.delivery_time_options = {monday: ['Between 6-7am'], saturday: ['Between 9-12am']}.to_json
-      end
-
-      it 'should not allow delivery time to be in an invalid slot for the delivery day' do
-        order.delivery_date =  DateTime.now.next_week.next_day(5)
-        order.delivery_time = 'Between 6-7am'
-
-        order.valid_delivery_time?.should == false
-        order.errors[:delivery_time].should_not be_empty
-      end
-
-      it 'should allow delivery time to be in an valid slot for the delivery day' do
-        order.delivery_date =  DateTime.now.next_week.next_day(5)
-        order.delivery_time = 'Between 9-12am'
-
-        order.valid_delivery_time?.should == true
-        order.errors[:delivery_time].should be_empty
       end
 
     end
