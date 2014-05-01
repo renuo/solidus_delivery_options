@@ -53,31 +53,5 @@ module SpreeDeliveryOptions
       next_available_day
     end
 
-    def next_delivery_day
-      current_day = nil
-      delivery_options_for_now = nil
-      if earliest_cutoff_time(Time.zone.now).nil?
-        current_day = (Date.current + 2.days)
-        delivery_options_for_now = delivery_options_for("00:01")
-      else
-        current_day = (Date.current + 1.day)
-        delivery_options_for_now = delivery_options_for(Time.zone.now.strftime("%H:%M"))
-      end
-
-      return nil unless delivery_options_for_now
-
-      next_available_day = nil
-      counter = 0
-      until next_available_day || counter > 7 do
-        if delivery_options_for_now[current_day.strftime('%A').downcase]
-          next_available_day = current_day
-        else
-          current_day = current_day + 1.day
-          counter = counter + 1
-        end
-      end
-      next_available_day
-    end
-
   end
 end
