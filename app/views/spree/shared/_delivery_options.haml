@@ -22,7 +22,7 @@
               = form.text_field :delivery_date, value: (l(order.delivery_date) rescue l(Date.current + 1))
             .field
               = form.label :delivery_time, "Delivery Time"
-              = form.select :delivery_time, JSON.parse(SpreeDeliveryOptions::Config.delivery_time_options)["monday"]
+              = form.select :delivery_time, current_delivery_options_for_date(Date.tomorrow)
             .field
               = form.submit "Set Delivery Time"
             .delivery-time-options{data: SpreeDeliveryOptions::Config.delivery_time_options}

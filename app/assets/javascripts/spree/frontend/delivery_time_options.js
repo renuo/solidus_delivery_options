@@ -18,24 +18,37 @@ function SpreeDeliveryOptions() {
   };
 
   this.update_delivery_time_options = function() {
-    deliveryTimeOptions = $.parseJSON($('.delivery-time-options').attr("data"));
+    var deliveryTimeGroups = $.parseJSON($('.delivery-time-options').attr("data"));
 
-    if (deliveryTimeOptions){
-      weekdays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-      
-      var dayOptions = [];
-      var deliveryDate = $('#order_delivery_date').val();
+    if (deliveryTimeGroups){
 
-      if (deliveryTimeOptions[deliveryDate]) {
-        dayOptions = deliveryTimeOptions[deliveryDate];
-      } else {
-        var dateParts = deliveryDate.split('/')
-        var dayIndex = new Date(dateParts[2], dateParts[1]-1, dateParts[0]).getDay();
-        weekday = weekdays[dayIndex];
+      var timeNow = moment().format('H:mm');
+      var deliveryTimeOptions;
+      $.each(deliveryTimeGroups[0], function(index, value) {
+        if (moment().format("H:mm") < index)
+          {
+            deliveryTimeOptions = value;
+            return false;
+          }
+      });
 
-        dayOptions = deliveryTimeOptions[weekday];
+      if (deliveryTimeOptions) {
+        weekdays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        
+        var dayOptions = [];
+        var deliveryDate = $('#order_delivery_date').val();
+
+        if (deliveryTimeOptions[deliveryDate]) {
+          dayOptions = deliveryTimeOptions[deliveryDate];
+        } else {
+          var dateParts = deliveryDate.split('/')
+          var dayIndex = new Date(dateParts[2], dateParts[1]-1, dateParts[0]).getDay();
+          weekday = weekdays[dayIndex];
+
+          dayOptions = deliveryTimeOptions[weekday];
+        }
+        this.populate_delivery_time(dayOptions);
       }
-      this.populate_delivery_time(dayOptions);
     }
   };
 

@@ -14,7 +14,7 @@ module SpreeDeliveryOptions
       return current_delivery_options[date_string] if current_delivery_options[date_string]
 
       week_day = delivery_date.strftime("%A")
-      current_delivery_options[week_day.downcase]
+      current_delivery_options[week_day.downcase] || []
     end
 
     def all_delivery_options_for_date(delivery_date)
@@ -38,11 +38,7 @@ module SpreeDeliveryOptions
     end
 
     def delivery_groups
-      @delivery_groups = JSON.parse(SpreeDeliveryOptions::Config.delivery_time_options)
-    end
-
-    def cutoff_groups
-      @cutoff_groups = JSON.parse(SpreeDeliveryOptions::Config.delivery_cut_off_time)
+      @delivery_groups = JSON.parse(SpreeDeliveryOptions::Config.delivery_time_options)[0] || []
     end
 
   end

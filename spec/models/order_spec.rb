@@ -5,7 +5,7 @@ describe Spree::Order do
   let(:order){Spree::Order.new}
 
   before :each do
-    SpreeDeliveryOptions::Config.delivery_time_options = {monday: ['Between 6-7am']}.to_json
+    SpreeDeliveryOptions::Config.delivery_time_options = [{monday: ['Between 6-7am']}].to_json
     SpreeDeliveryOptions::Config.delivery_cut_off_time = "13:15"
   end
 
@@ -60,7 +60,7 @@ describe Spree::Order do
   describe "valid_delivery_options?" do
 
     before :each do
-      SpreeDeliveryOptions::Config.delivery_time_options = {"13:15" => {monday: ['Between 6-7am']}, "20:00" => {monday: ['6pm to 7:30pm']}}.to_json
+      SpreeDeliveryOptions::Config.delivery_time_options = [{"13:15" => {monday: ['Between 6-7am']}, "20:00" => {monday: ['6pm to 7:30pm']}}].to_json
     end
 
     it 'should not be valid if delivery date is in the past' do
@@ -128,7 +128,7 @@ describe Spree::Order do
     context 'delivery time' do
 
       before :each do
-        SpreeDeliveryOptions::Config.delivery_time_options = {"13:15" => {monday: ['Between 6-7am']}, "20:00" => {monday: ['6pm to 7:30pm']}}.to_json
+        SpreeDeliveryOptions::Config.delivery_time_options = [{"13:15" => {monday: ['Between 6-7am']}, "20:00" => {monday: ['6pm to 7:30pm']}}].to_json
       end
 
       it 'should require a valid option for delivery time' do
@@ -182,7 +182,7 @@ describe Spree::Order do
       end
 
       it 'should not allow delivery time to be in an invalid slot for the delivery day' do
-        SpreeDeliveryOptions::Config.delivery_time_options = {"13:15" => {monday: ['Between 6-7am'], '03/03/2014' => ['Between 9-12am']}, "20:00" => {monday: ['6pm to 7:30pm']}}.to_json
+        SpreeDeliveryOptions::Config.delivery_time_options = [{"13:15" => {monday: ['Between 6-7am'], '03/03/2014' => ['Between 9-12am']}, "20:00" => {monday: ['6pm to 7:30pm']}}].to_json
 
         time_now = DateTime.parse("01/03/2014 10:00 +1100", "%d/%m/%Y %H:%M %z")
         Timecop.freeze(time_now)
@@ -196,7 +196,7 @@ describe Spree::Order do
       end
 
       it 'should not allow delivery time to be in date with empty options' do
-        SpreeDeliveryOptions::Config.delivery_time_options = {"13:15" => {monday: ['Between 6-7am'], '03/03/2014' => []}, "20:00" => {monday: ['6pm to 7:30pm']}}.to_json
+        SpreeDeliveryOptions::Config.delivery_time_options = [{"13:15" => {monday: ['Between 6-7am'], '03/03/2014' => []}, "20:00" => {monday: ['6pm to 7:30pm']}}].to_json
 
         time_now = DateTime.parse("01/03/2014")
         Timecop.freeze(time_now)
@@ -205,7 +205,7 @@ describe Spree::Order do
         order.delivery_time = 'Between 6-7am'
 
         order.valid_delivery_options?.should == false
-        order.errors[:delivery_time].should_not be_empty
+        order.errors[:delivery_date].should_not be_empty
         Timecop.return
       end
 
