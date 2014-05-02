@@ -4,7 +4,11 @@ module SpreeDeliveryOptions
     private
 
     def current_delivery_options_for_date(delivery_date)
-      delivery_options_for_date_and_time(delivery_date, Time.zone.now.strftime("%H:%M"))
+      if delivery_date > (Date.current + 1.day)
+        delivery_options_for_date_and_time(delivery_date, "00:01")
+      else
+        delivery_options_for_date_and_time(delivery_date, Time.zone.now.strftime("%H:%M"))
+      end
     end
 
     def delivery_options_for_date_and_time(delivery_date, time_string)

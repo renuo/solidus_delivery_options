@@ -60,7 +60,7 @@ describe Spree::Order do
   describe "valid_delivery_options?" do
 
     before :each do
-      SpreeDeliveryOptions::Config.delivery_time_options = [{"13:15" => {monday: ['Between 6-7am']}, "20:00" => {monday: ['6pm to 7:30pm']}}].to_json
+      SpreeDeliveryOptions::Config.delivery_time_options = [{"13:15" => {monday: ['Between 6-7am'], tuesday: ['Between 6-7am'], wednesday: ['Between 6-7am']}, "20:00" => {monday: ['6pm to 7:30pm']}}].to_json
     end
 
     it 'should not be valid if delivery date is in the past' do
@@ -122,6 +122,18 @@ describe Spree::Order do
 
       order.valid_delivery_options?.should == false
       order.errors[:delivery_date].should_not be_empty
+      Timecop.return
+    end
+
+    it 'should be valid if delivery date is after tomorrow morning even when its after the morning cutoff time' do
+      time_now = DateTime.parse("17/11/2013 19:14 +1100", "%d/%m/%Y %H:%M %z")
+      Timecop.freeze(time_now)
+
+      order.delivery_date = '19/11/2013'
+      order.delivery_time = 'Between 6-7am'
+
+      order.valid_delivery_options?.should == true
+      order.errors[:delivery_date].should be_empty
       Timecop.return
     end
 

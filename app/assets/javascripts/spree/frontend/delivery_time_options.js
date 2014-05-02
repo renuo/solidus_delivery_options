@@ -24,7 +24,7 @@ function SpreeDeliveryOptions() {
     var baselineTime = moment().format('H:mm');
 
     var tomorrow = moment().add('days', 1);
-    if (moment(deliveryDate).isAfter(tomorrow)) {
+    if (moment(deliveryDate, "DD-MM-YYYY").isAfter(tomorrow)) {
       baselineTime = "00:01";
     }
 
