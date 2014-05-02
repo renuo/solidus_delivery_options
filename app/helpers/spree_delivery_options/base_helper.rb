@@ -20,26 +20,27 @@ module SpreeDeliveryOptions
     end
 
     def next_delivery_slot
-      first_possible_delivery_day = Date.current + 1.day
       current_time_string = Time.zone.now.strftime("%H:%M")
+      first_possible_delivery_day = Date.current + 1.day
 
-      available_delivery_options = delivery_options_for_time(current_time_string)
-      if available_delivery_options.empty?
+      if delivery_options_for_time(current_time_string).empty?
         first_possible_delivery_day += 1.day
-        available_delivery_options = delivery_options_for_time("00:01")
+        current_time_string = "00:01"
       end
-      return "" if available_delivery_options.empty?
+      return "" if delivery_options_for_time(current_time_string).empty?
+        
+      delivery_day = next_available_day(first_possible_delivery_day)
 
-      delivery_day = next_available_day(first_possible_delivery_day, available_delivery_options)
-      "#{delivery_day.strftime('%A').titleize} between #{available_delivery_options[delivery_day.strftime('%A').downcase].first}"
+      "#{delivery_day.strftime('%A').titleize} between #{delivery_options_for_date_and_time(delivery_day, current_time_string).first}"
     end
 
-    def next_available_day(current_day, available_options)
+    def next_available_day(current_day)
       next_available_day = nil
       counter = 0
       until next_available_day || counter > 7 do
-        if available_options[current_day.strftime('%A').downcase]
+        unless all_delivery_options_for_date(current_day).empty?
           next_available_day = current_day
+          break
         else
           current_day = current_day + 1.day
           counter = counter + 1

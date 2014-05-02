@@ -73,7 +73,10 @@ describe SpreeDeliveryOptions::BaseHelper do
   describe 'next delivery slot' do
 
     before :each do
-      SpreeDeliveryOptions::Config.delivery_time_options = {"13:15" => {tuesday: ['6am to 7:30am'], wednesday: ['6am to 7:30am']}, "20:00" => {tuesday: ['6pm to 7:30pm']}}.to_json
+      SpreeDeliveryOptions::Config.delivery_time_options = {
+        "13:15" => {tuesday: ['6am to 7:30am'], wednesday: ['6am to 7:30am'], thursday: []},
+        "20:00" => {tuesday: ['6pm to 7:30pm']}
+      }.to_json
     end
 
     after :each do
@@ -92,6 +95,18 @@ describe SpreeDeliveryOptions::BaseHelper do
       Timecop.freeze(time_now)
 
       helper.next_delivery_slot.should == 'Tuesday between 6pm to 7:30pm'
+    end
+
+    it 'should consider overrides when getting cutoff time' do
+      SpreeDeliveryOptions::Config.delivery_time_options = {
+        "13:15" => {tuesday: ['6am to 7:30am'], wednesday: ['6am to 7:30am'], thursday: []},
+        "20:00" => {"11/03/2014" => ['9am to 12am'], tuesday: ['6pm to 7:30pm']}
+      }.to_json
+
+      time_now = DateTime.parse("10/03/2014 14:00 +1100")
+      Timecop.freeze(time_now)
+
+      helper.next_delivery_slot.should == 'Tuesday between 9am to 12am'
     end
 
     it 'should return the day after tomorrow morning if its after evening cutoff time' do

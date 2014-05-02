@@ -4,7 +4,11 @@ module SpreeDeliveryOptions
     private
 
     def current_delivery_options_for_date(delivery_date)
-      current_delivery_options = delivery_options_for_time(Time.zone.now.strftime("%H:%M"))
+      delivery_options_for_date_and_time(delivery_date, Time.zone.now.strftime("%H:%M"))
+    end
+
+    def delivery_options_for_date_and_time(delivery_date, time_string)
+      current_delivery_options = delivery_options_for_time(time_string)
 
       date_string = delivery_date.strftime("%d/%m/%Y")
       return current_delivery_options[date_string] if current_delivery_options[date_string]
