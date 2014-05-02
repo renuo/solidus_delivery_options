@@ -23,10 +23,10 @@
               = f.label :delivery_date, "Delivery Date"
               = f.text_field :delivery_date, class: "datepicker"
             .field
-              - delivery_options = JSON.parse(SpreeDeliveryOptions::Config.delivery_time_options)[(@order.delivery_date || Date.today).strftime('%A').downcase]
+              - delivery_options = JSON.parse(SpreeDeliveryOptions::Config.delivery_time_options)
               .selected-delivery-time{data: @order.delivery_time}
-              = f.label :delivery_time, "Delivery Time"
-              = f.select :delivery_time, delivery_options || ""
+                = f.label :delivery_time, "Delivery Time"
+              = f.select :delivery_time, [] 
             .field
               = f.label :delivery_instructions, "Delivery Instructions"
               = f.text_area :delivery_instructions, class: 'fullwidth'
