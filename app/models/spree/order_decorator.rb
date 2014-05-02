@@ -28,7 +28,7 @@ Spree::Order.class_eval do
     if (self.delivery_date && self.delivery_date_changed?) && (self.delivery_time && self.delivery_time_changed?)
       self.errors[:delivery_date] << 'cannot be today or in the past' if self.delivery_date <= Date.current
 
-      options = delivery_time_options(self.delivery_date)
+      options = current_delivery_options_for_date(self.delivery_date)
       if options
         self.errors[:delivery_time] << 'is invalid' unless options.include?(self.delivery_time)
       else
@@ -37,31 +37,6 @@ Spree::Order.class_eval do
     end
 
     (self.errors[:delivery_date].empty? && self.errors[:delivery_time].empty?) ? true : false
-  end
-
-  private
-
-  def delivery_time_options(date)
-    date_string = date.strftime("%d/%m/%Y")
-
-    return current_delivery_options[date_string] if current_delivery_options[date_string]
-
-    week_day = date.strftime("%A")
-    current_delivery_options[week_day.downcase]
-  end
-
-  def current_delivery_options
-    delivery_groups.each do |cutoff_time, options|
-      return options if Time.zone.now.strftime("%H:%M") < cutoff_time
-    end
-    {} 
-  end
-
-  def cutoff_time(time_string)
-    cutoff_hour = time_string.split(':')[0].to_i
-    cutoff_minute = time_string.split(':')[1].to_i
-
-    Time.zone.now.change(hour: cutoff_hour, min: cutoff_minute)
   end
 
 end

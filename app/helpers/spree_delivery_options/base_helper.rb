@@ -24,19 +24,14 @@ module SpreeDeliveryOptions
       current_time_string = Time.zone.now.strftime("%H:%M")
 
       available_delivery_options = delivery_options_for_time(current_time_string)
-      unless available_delivery_options
+      if available_delivery_options.empty?
         first_possible_delivery_day += 1.day
         available_delivery_options = delivery_options_for_time("00:01")
       end
-      return "" unless available_delivery_options
+      return "" if available_delivery_options.empty?
 
       delivery_day = next_available_day(first_possible_delivery_day, available_delivery_options)
       "#{delivery_day.strftime('%A').titleize} between #{available_delivery_options[delivery_day.strftime('%A').downcase].first}"
-    end
-
-    def delivery_options_for_time(time_string)
-      delivery_groups.each{|cutoff_time, options| return options if time_string < cutoff_time}
-      nil
     end
 
     def next_available_day(current_day, available_options)
