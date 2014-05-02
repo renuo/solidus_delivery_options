@@ -23,24 +23,18 @@ module SpreeDeliveryOptions
       current_time_string = Time.zone.now.strftime("%H:%M")
       possible_delivery_day = Date.current + 1.day
 
-      possible_delivery_day_options = delivery_options_for_date_and_time(possible_delivery_day, current_time_string)
-      if !delivery_options_for_date_and_time(possible_delivery_day, current_time_string).empty?
-        return "#{possible_delivery_day.strftime('%A').titleize} between #{possible_delivery_day_options.first}"
-      else
-        counter = 0
-        until counter > 7 do
-          possible_delivery_day = possible_delivery_day + 1.day
-          current_time_string = "00:01"
-          possible_delivery_day_options = delivery_options_for_date_and_time(possible_delivery_day, current_time_string)
+      next_delivery_slot_for(possible_delivery_day, current_time_string)
+    end
 
-          if !possible_delivery_day_options.empty?
-            return "#{possible_delivery_day.strftime('%A').titleize} between #{possible_delivery_day_options.first}"
-          end
-          counter += 1
-        end
+    def next_delivery_slot_for(delivery_date, time_string, counter=0)
+      return "" if counter == 7 #break after cycling through the week
+
+      possible_delivery_options = delivery_options_for_date_and_time(delivery_date, time_string)
+      unless possible_delivery_options.empty?
+        return "#{delivery_date.strftime('%A').titleize} between #{possible_delivery_options.first}"
       end
-
-      ""
+      
+      next_delivery_slot_for(delivery_date + 1.day, "00:01", counter + 1)
     end
 
   end
