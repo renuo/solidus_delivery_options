@@ -118,10 +118,15 @@ describe SpreeDeliveryOptions::BaseHelper do
     end
 
     it 'should skip day if deliveries are not available' do
-      time_now = DateTime.parse("13/03/2014 12:00 +1100")
+      SpreeDeliveryOptions::Config.delivery_time_options = [{
+        "13:15" => {monday: ['6am to 7:30am'], tuesday: ['6am to 7:30am'], wednesday: ['6am to 7:30am'], thursday: []},
+        "20:00" => {"11/03/2014" => ['9am to 12am'], tuesday: ['6pm to 7:30pm']}
+      }].to_json
+
+      time_now = DateTime.parse("02/05/2014 14:00 +1100")
       Timecop.freeze(time_now)
 
-      helper.next_delivery_slot.should == 'Tuesday between 6am to 7:30am'
+      helper.next_delivery_slot.should == 'Monday between 6am to 7:30am'
     end
 
     it 'should return nil if no delivery times are available' do
