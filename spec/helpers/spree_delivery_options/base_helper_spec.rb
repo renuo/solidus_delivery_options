@@ -44,6 +44,18 @@ describe SpreeDeliveryOptions::BaseHelper do
       Timecop.return
     end
 
+    it 'should consider overrides when establishing the cutoff time' do
+      SpreeDeliveryOptions::Config.delivery_time_options = {"13:15" => {monday: ['6pm to 7:30pm']}, "20:00" => {"21/04/2014" => ["9am to 12am"], monday: ['6pm to 7:30pm']}}.to_json
+
+      order.delivery_date = Date.parse('21/04/2014')
+      order.delivery_time = '6pm to 7:30pm'
+
+      time_now = DateTime.parse("18/03/2013")
+      Timecop.freeze(time_now)
+      helper.current_order_cutoff_time.should == 'Sunday, 20 Apr before 1pm'
+      Timecop.return
+    end
+
     it 'should return the latest one if time is in both' do
       SpreeDeliveryOptions::Config.delivery_time_options = {"13:15" => {monday: ['6pm to 7:30pm']}, "20:00" => {monday: ['6pm to 7:30pm']}}.to_json
 

@@ -7,13 +7,13 @@ module SpreeDeliveryOptions
       return nil unless (current_order && current_order.delivery_date && current_order.delivery_time)
       
       cutoff_date = current_order.delivery_date - 1.day
-      order_week_day = current_order.delivery_date.strftime('%A').downcase
+      all_delivery_options = all_delivery_options_for_date(current_order.delivery_date)
 
-      possible_cutoff_times = delivery_groups.select {|cutoff_time, options| 
-        options[order_week_day].include?(current_order.delivery_time)
-      }.map{|cutoff_time, options| cutoff_time} rescue nil
+      possible_cutoff_times = all_delivery_options.select{ |opt| 
+        opt.values.flatten.include?(current_order.delivery_time)
+      }.map{ |opt| opt.keys}.flatten rescue nil
 
-      return nil unless possible_cutoff_times
+      return nil if possible_cutoff_times.empty?
 
       cutoff_time = DateTime.strptime(possible_cutoff_times.sort.last, "%H:%M").strftime("%l%P").strip
       "#{cutoff_date.strftime('%A, %d %b')} before #{cutoff_time}"
