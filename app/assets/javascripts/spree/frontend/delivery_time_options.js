@@ -17,38 +17,46 @@ function SpreeDeliveryOptions() {
     });
   };
 
-  this.update_delivery_time_options = function() {
+  this.parseDeliveryOptions = function(deliveryDate) {
     var deliveryTimeGroups = $.parseJSON($('.delivery-time-options').attr("data"));
+    var result;
 
-    if (deliveryTimeGroups){
+    var baselineTime = moment().format('H:mm');
 
-      var timeNow = moment().format('H:mm');
-      var deliveryTimeOptions;
-      $.each(deliveryTimeGroups[0], function(index, value) {
-        if (moment().format("H:mm") < index)
-          {
-            deliveryTimeOptions = value;
-            return false;
-          }
-      });
+    var tomorrow = moment().add('days', 1);
+    if (moment(deliveryDate).isAfter(tomorrow)) {
+      baselineTime = "00:01";
+    }
 
-      if (deliveryTimeOptions) {
-        weekdays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-        
-        var dayOptions = [];
-        var deliveryDate = $('#order_delivery_date').val();
-
-        if (deliveryTimeOptions[deliveryDate]) {
-          dayOptions = deliveryTimeOptions[deliveryDate];
-        } else {
-          var dateParts = deliveryDate.split('/')
-          var dayIndex = new Date(dateParts[2], dateParts[1]-1, dateParts[0]).getDay();
-          weekday = weekdays[dayIndex];
-
-          dayOptions = deliveryTimeOptions[weekday];
+    $.each(deliveryTimeGroups[0], function(index, value) {
+      if (baselineTime < index)
+        {
+          result = value;
+          return false;
         }
-        this.populate_delivery_time(dayOptions);
+    });
+    return result;
+  };
+
+  this.update_delivery_time_options = function() {
+    var deliveryDate = $('#order_delivery_date').val();
+    var deliveryTimeOptions = this.parseDeliveryOptions(deliveryDate);
+
+    if (deliveryTimeOptions) {
+      weekdays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
+      var dayOptions = [];
+
+      if (deliveryTimeOptions[deliveryDate]) {
+        dayOptions = deliveryTimeOptions[deliveryDate];
+      } else {
+        var dateParts = deliveryDate.split('/')
+        var dayIndex = new Date(dateParts[2], dateParts[1]-1, dateParts[0]).getDay();
+        weekday = weekdays[dayIndex];
+
+        dayOptions = deliveryTimeOptions[weekday];
       }
+      this.populate_delivery_time(dayOptions);
     }
   };
 
