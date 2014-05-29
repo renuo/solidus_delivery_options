@@ -13,7 +13,7 @@
       .row.form
         .columns.seven.alpha
           %h3 Want to know when you're getting your groceries?
-          %h5 Choose your delivery time and get it sorted now
+          %h5 Choose your FREE* delivery time and get it sorted now
         .columns.four
           = form_for order, {url: api_order_url(order), html: {id: 'delivery-options-form'}} do |form|
             = hidden_field_tag 'order_token', order.token
@@ -31,3 +31,4 @@
             The next available delivery slot is
             = next_delivery_slot
           .error.hide
+          %p.delivery_t_and_c * On your first order or any order above $30
