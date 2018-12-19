@@ -1,3 +1,7 @@
-Spree::CheckoutController.class_eval do
-  helper 'solidus_delivery_options/base'
+module Spree
+  module CheckoutControllerDecorator
+    helper 'solidus_delivery_options/base'
+  end
 end
+
+Spree::CheckoutController.prepend Spree::CheckoutControllerDecorator

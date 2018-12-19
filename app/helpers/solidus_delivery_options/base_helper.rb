@@ -8,9 +8,9 @@ module SolidusDeliveryOptions
       cutoff_date = current_order.delivery_date - 1.day
       all_delivery_options = all_delivery_options_for_date(current_order.delivery_date)
 
-      possible_cutoff_times = all_delivery_options.select { |opt|
-        opt.values.flatten.include?(current_order.delivery_time)
-      }.map { |opt| opt.keys }.flatten rescue nil
+      possible_cutoff_times = all_delivery_options.select do |option|
+        option.values.flatten.include?(current_order.delivery_time)
+      end.map(&:keys).flatten rescue nil
 
       return nil if possible_cutoff_times.empty?
 

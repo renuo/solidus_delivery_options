@@ -1,3 +1,7 @@
-ApplicationHelper.class_eval do
-  include SolidusDeliveryOptions::BaseHelper
+module SolidusDeliveryOptions
+  module ApplicationHelperDecorator
+    include SolidusDeliveryOptions::BaseHelper
+  end
 end
+
+ApplicationHelper.prepend SolidusDeliveryOptions::ApplicationHelperDecorator

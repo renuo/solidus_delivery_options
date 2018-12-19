@@ -1,3 +1,7 @@
-Spree::ProductsController.class_eval do
-  helper 'solidus_delivery_options/base'
+module Spree
+  module ProductsControllerDecorator
+    helper 'solidus_delivery_options/base'
+  end
 end
+
+Spree::ProductsController.prepend Spree::ProductsControllerDecorator
