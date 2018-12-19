@@ -1,4 +1,4 @@
-Spree Delivery Options
+Solidus Delivery Options
 =================
 
 This gem is a fork from [spree_delivery_date](from 'https://github.com/sgringwe/spree_delivery_date'), and it has been updated to work with spree_core 2.1.3, as well as other changes. 
