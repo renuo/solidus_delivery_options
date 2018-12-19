@@ -1,3 +1,0 @@
-- if can? :update, @order && checkout_steps.include?("delivery") %>
-  %li(class="#{'active' if current == 'Delivery Options'}")
-    = link_to_with_icon 'icon-truck', Spree.t(:delivery_options), admin_order_delivery_options_url(@order)

@@ -1,0 +1,8 @@
+<h4><%= Spree.t('activerecord.attributes.spree/order.delivery_date') %></h4>
+<div id="delivery_date">
+  <div class="field">
+    <%= form.label :delivery_date %>
+    <%= form.date_field :delivery_date, min: Date.today + 1.day %>
+    <%= content_tag :span, I18n.t('activerecord.attributes.spree/order.hint'), class: 'hint' %>
+  </div>
+</div>

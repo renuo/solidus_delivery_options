@@ -1,0 +1,20 @@
+de:
+  activerecord: &active_record
+    errors:
+      models:
+        spree/order:
+          attributes:
+            delivery_date:
+              cannot_be_today_or_in_the_past: darf nicht in der Vergangenheit sein.
+              cannot_be_tomorrow_if_the_order_is_created_after: darf nicht Morgen sein, wenn Bestellung nach %{cut_off} Uhr aufgegeben.
+              not_available_on_selected_date: nicht verfügbar and diesem Datum
+            delivery_instructions:
+              cannot_be_longer_than_500_charachters: darf nicht länger als 50 Zeichen sein.
+    attributes:
+      spree/order:
+        hint: Für die Lieferung von Küchen benötigen wir mind. fünf Wochen.
+        delivery_date: Lieferdatum
+
+  spree:
+    activerecord:
+      <<: *active_record
