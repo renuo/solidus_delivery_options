@@ -17,13 +17,13 @@ module Spree
 
         private
 
-        def update_delivery_options(order)
+        def update_delivery_options(_order)
           order_params = delivery_options_params
           if order_params[:delivery_date]
             @order.delivery_date = order_params.delete(:delivery_date)
             @order.save(validate: false)
           end
-          @order.update_attributes(order_params)
+          @order.update(order_params)
         end
 
         def delivery_options_params

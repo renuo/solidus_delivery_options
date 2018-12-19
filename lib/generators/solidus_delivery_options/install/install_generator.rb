@@ -9,8 +9,8 @@ module SolidusDeliveryOptions
       end
 
       def add_stylesheets
-        inject_into_file 'vendor/assets/stylesheets/spree/frontend/all.css', " *= require spree/frontend/solidus_delivery_options\n", :before => /\*\//, :verbose => true
-        inject_into_file 'vendor/assets/stylesheets/spree/backend/all.css', " *= require spree/backend/solidus_delivery_options\n", :before => /\*\//, :verbose => true
+        inject_into_file 'vendor/assets/stylesheets/spree/frontend/all.css', " *= require spree/frontend/solidus_delivery_options\n", before: %r{\*/}, verbose: true
+        inject_into_file 'vendor/assets/stylesheets/spree/backend/all.css', " *= require spree/backend/solidus_delivery_options\n", before: %r{\*/}, verbose: true
       end
 
       def add_migrations
@@ -19,7 +19,7 @@ module SolidusDeliveryOptions
 
       def run_migrations
         res = ask 'Would you like to run the migrations now? [Y/n]'
-        if res == '' || res.downcase == 'y'
+        if res == '' || res.casecmp('y').zero?
           run 'bundle exec rake db:migrate'
         else
           puts 'Skipping rake db:migrate, don\'t forget to run it!'
