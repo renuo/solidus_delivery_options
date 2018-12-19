@@ -1,4 +1,4 @@
-function SpreeDeliveryOptions() {
+function SolidusDeliveryOptions() {
 
   var that = this;
 
@@ -84,6 +84,6 @@ function SpreeDeliveryOptions() {
 }
 
 $(document).ready(function() {
-  var deliveryOptions = new SpreeDeliveryOptions();
+  var deliveryOptions = new SolidusDeliveryOptions();
   deliveryOptions.initializeDeliveryTimeSelect();
 });

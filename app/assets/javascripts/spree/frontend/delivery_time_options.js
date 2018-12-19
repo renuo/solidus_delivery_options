@@ -1,11 +1,11 @@
-function SpreeDeliveryOptions() {
+function SolidusDeliveryOptions() {
 
   var that = this;
 
   this.initializeDatePicker = function() {
      $('#order_delivery_date').datepicker({
        dateFormat: "dd/mm/yy",
-       minDate: 1 
+       minDate: 1
      });
   };
 
@@ -81,7 +81,7 @@ function SpreeDeliveryOptions() {
 }
 
 $(document).ready(function() {
-  var deliveryOptions = new SpreeDeliveryOptions();
+  var deliveryOptions = new SolidusDeliveryOptions();
   deliveryOptions.initializeDatePicker();
   deliveryOptions.initializeDeliveryTimeSelect();
 });

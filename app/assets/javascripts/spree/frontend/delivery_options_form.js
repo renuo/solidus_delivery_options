@@ -1,4 +1,4 @@
-function SpreeDeliveryOptionsForm() {
+function SolidusDeliveryOptionsForm() {
 
   var that = this;
 
@@ -38,6 +38,6 @@ function SpreeDeliveryOptionsForm() {
 }
 
 $(document).ready(function() {
-  var deliveryOptionsForm = new SpreeDeliveryOptionsForm();
+  var deliveryOptionsForm = new SolidusDeliveryOptionsForm();
   deliveryOptionsForm.initializeForm();
 });

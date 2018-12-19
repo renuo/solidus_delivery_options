@@ -26,7 +26,7 @@ Installation
 
 Add the gem to your Gemfile
 
-    $ gem 'spree_delivery_options'
+    $ gem 'solidus_delivery_options'
 
 bundle with
   
@@ -34,7 +34,7 @@ bundle with
 
 and run
 
-    $ rails g spree_delivery_options:install
+    $ rails g solidus_delivery_options:install
 
 to install and (be asken to) run the migrations. This migration simply adds the delivery_date field to Spree::Order.
 
@@ -52,7 +52,7 @@ Both the delivery cut off hour and the delivery time options can be configured i
             }
           }
         ].to_json
-        SpreeDeliveryOptions::Config.delivery_time_options = delivery_time_options
+        SolidusDeliveryOptions::Config.delivery_time_options = delivery_time_options
       end
 
 The delivery options for any weekday can be overriden by specifying a date in dd/mm/yyyy format (i.e. for different times in public holidays). 

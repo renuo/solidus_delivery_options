@@ -2,7 +2,7 @@ Spree::Order.class_eval do
   require 'date'
   require 'spree/order/checkout'
 
-  include SpreeDeliveryOptions::DeliveryOptionsService
+  include SolidusDeliveryOptions::DeliveryOptionsService
 
   validate :valid_delivery_options?
 

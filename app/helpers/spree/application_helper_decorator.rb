@@ -1,3 +1,3 @@
 ApplicationHelper.class_eval do
-  include SpreeDeliveryOptions::BaseHelper
+  include SolidusDeliveryOptions::BaseHelper
 end

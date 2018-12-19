@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe SpreeDeliveryOptions::BaseHelper do
+describe SolidusDeliveryOptions::BaseHelper do
 
 
   describe 'current order cutoff time' do
@@ -10,7 +10,7 @@ describe SpreeDeliveryOptions::BaseHelper do
     before :each do
       helper.stub(:current_order).and_return(order)
     end
-    
+
     it 'should return nil if there is no current order' do
       helper.stub(:current_order).and_return(nil)
       helper.current_order_cutoff_time.should be_nil
@@ -34,7 +34,7 @@ describe SpreeDeliveryOptions::BaseHelper do
     end
 
     it 'should return the correct delivery group cut off time depending on the delivery time' do
-      SpreeDeliveryOptions::Config.delivery_time_options = [{"13:15" => {monday: ['6am to 7:30am']}, "20:00" => {monday: ['6pm to 7:30pm']}}].to_json
+      SolidusDeliveryOptions::Config.delivery_time_options = [{"13:15" => {monday: ['6am to 7:30am']}, "20:00" => {monday: ['6pm to 7:30pm']}}].to_json
 
       order.delivery_date = Date.parse('21/04/2014')
       order.delivery_time = '6pm to 7:30pm'
@@ -46,7 +46,7 @@ describe SpreeDeliveryOptions::BaseHelper do
     end
 
     it 'should consider overrides when establishing the cutoff time' do
-      SpreeDeliveryOptions::Config.delivery_time_options = [{"13:15" => {monday: ['6pm to 7:30pm']}, "20:00" => {"21/04/2014" => ["9am to 12am"], monday: ['6pm to 7:30pm']}}].to_json
+      SolidusDeliveryOptions::Config.delivery_time_options = [{"13:15" => {monday: ['6pm to 7:30pm']}, "20:00" => {"21/04/2014" => ["9am to 12am"], monday: ['6pm to 7:30pm']}}].to_json
 
       order.delivery_date = Date.parse('21/04/2014')
       order.delivery_time = '6pm to 7:30pm'
@@ -58,7 +58,7 @@ describe SpreeDeliveryOptions::BaseHelper do
     end
 
     it 'should return the latest one if time is in both' do
-      SpreeDeliveryOptions::Config.delivery_time_options = [{"13:15" => {monday: ['6pm to 7:30pm']}, "20:00" => {monday: ['6pm to 7:30pm']}}].to_json
+      SolidusDeliveryOptions::Config.delivery_time_options = [{"13:15" => {monday: ['6pm to 7:30pm']}, "20:00" => {monday: ['6pm to 7:30pm']}}].to_json
 
       order.delivery_date = Date.parse('21/04/2014')
       order.delivery_time = '6pm to 7:30pm'
@@ -74,7 +74,7 @@ describe SpreeDeliveryOptions::BaseHelper do
   describe 'next delivery slot' do
 
     before :each do
-      SpreeDeliveryOptions::Config.delivery_time_options = [{
+      SolidusDeliveryOptions::Config.delivery_time_options = [{
         "13:15" => {tuesday: ['6am to 7:30am'], wednesday: ['6am to 7:30am'], thursday: []},
         "20:00" => {tuesday: ['6pm to 7:30pm']}
       }].to_json
@@ -99,7 +99,7 @@ describe SpreeDeliveryOptions::BaseHelper do
     end
 
     it 'should consider overrides when getting cutoff time' do
-      SpreeDeliveryOptions::Config.delivery_time_options = [{
+      SolidusDeliveryOptions::Config.delivery_time_options = [{
         "13:15" => {tuesday: ['6am to 7:30am'], wednesday: ['6am to 7:30am'], thursday: []},
         "20:00" => {"11/03/2014" => ['9am to 12am'], tuesday: ['6pm to 7:30pm']}
       }].to_json
@@ -118,7 +118,7 @@ describe SpreeDeliveryOptions::BaseHelper do
     end
 
     it 'should skip day if deliveries are not available' do
-      SpreeDeliveryOptions::Config.delivery_time_options = [{
+      SolidusDeliveryOptions::Config.delivery_time_options = [{
         "13:15" => {monday: ['6am to 7:30am'], tuesday: ['6am to 7:30am'], wednesday: ['6am to 7:30am'], thursday: []},
         "20:00" => {"11/03/2014" => ['9am to 12am'], tuesday: ['6pm to 7:30pm']}
       }].to_json
@@ -130,7 +130,7 @@ describe SpreeDeliveryOptions::BaseHelper do
     end
 
     it 'should return nil if no delivery times are available' do
-      SpreeDeliveryOptions::Config.delivery_time_options = [].to_json
+      SolidusDeliveryOptions::Config.delivery_time_options = [].to_json
       time_now = DateTime.parse("13/03/2014 12:00 +1100")
       Timecop.freeze(time_now)
 

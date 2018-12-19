@@ -11,7 +11,7 @@
 = render :partial => 'spree/shared/error_messages', :locals => { :target => @order }
 
 #delivery-options-form
-  .delivery-time-options{data: SpreeDeliveryOptions::Config.delivery_time_options}
+  .delivery-time-options{data: SolidusDeliveryOptions::Config.delivery_time_options}
 
   = form_for @order, :url => admin_order_delivery_options_url(@order) do |f|
     %fieldset(data-hook="admin_delivery_options_form_fields" class="no-border-top")
@@ -23,10 +23,10 @@
               = f.label :delivery_date, "Delivery Date"
               = f.text_field :delivery_date, class: "datepicker"
             .field
-              - delivery_options = JSON.parse(SpreeDeliveryOptions::Config.delivery_time_options)
+              - delivery_options = JSON.parse(SolidusDeliveryOptions::Config.delivery_time_options)
               .selected-delivery-time{data: @order.delivery_time}
                 = f.label :delivery_time, "Delivery Time"
-              = f.select :delivery_time, [] 
+              = f.select :delivery_time, []
             .field
               = f.label :delivery_instructions, "Delivery Instructions"
               = f.text_area :delivery_instructions, class: 'fullwidth'

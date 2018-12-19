@@ -9,7 +9,7 @@
     = form.label :delivery_time, "Delivery Time"
     = form.select :delivery_time, current_delivery_options_for_date(Date.tomorrow)
 
-  .delivery-time-options{data: SpreeDeliveryOptions::Config.delivery_time_options}
+  .delivery-time-options{data: SolidusDeliveryOptions::Config.delivery_time_options}
 
 %h5.stock-delivery-instructions-title
   Delivery Instructions/Comments
