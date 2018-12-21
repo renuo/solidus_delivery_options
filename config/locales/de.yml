@@ -16,5 +16,7 @@ de:
         delivery_date: Lieferdatum
 
   spree:
+    delivery_options: Lieferoptionen
+    delivery_options_updated: Lieferoptionen wurden aktualisiert
     activerecord:
       <<: *active_record

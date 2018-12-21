@@ -8,7 +8,8 @@ module Spree
 
         def update
           @order = Order.find_by(number: params[:order_id])
-          if update_delivery_options(@order) && @order.next
+          if update_delivery_options(@order)
+            @order.next! unless @order.complete?
             flash[:success] = Spree.t('delivery_options_updated')
           end
 

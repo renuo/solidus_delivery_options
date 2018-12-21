@@ -21,6 +21,7 @@ module Spree
 
     def delivery_date_present?
       errors[:delivery_date] << I18n.t('activerecord.errors.messages.blank') unless delivery_date
+      errors[:delivery_date] << I18n.t('activerecord.errors.models.spree/order.attributes.delivery_date.cannot_be_today_or_in_the_past') if delivery_date <= Date.current
       errors[:delivery_date].empty?
     end
 
@@ -33,8 +34,6 @@ module Spree
 
     def valid_delivery_options?
       if (delivery_date && delivery_date_changed?) && (delivery_time && delivery_time_changed?)
-        errors[:delivery_date] << I18n.t('activerecord.errors.models.spree/order.attributes.delivery_date.cannot_be_today_or_in_the_past') if delivery_date <= Date.current
-
         options = current_delivery_options_for_date(delivery_date)
         if options.present?
           errors[:delivery_time] << I18n.t('activerecord.errors.messages.invalid') unless options.include?(delivery_time)

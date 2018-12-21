@@ -2,9 +2,7 @@
 
 <%= csrf_meta_tags %>
 
-<% content_for :page_title do %>
-  <i class="icon-arrow-right"><%= Spree.t(:delivery_options) %></i>
-<% end %>
+<% content_for :page_title, Spree.t(:delivery_options) %>
 
 <% content_for :page_actions do %>
   <li><%= button_link_to Spree.t(:back_to_orders_list), admin_orders_path, icon: 'icon-arrow-left' %></li>
@@ -13,7 +11,7 @@
 <%= render partial: 'spree/shared/error_messages', locals: { target: @order } %>
 
 <div id="delivery-options-form">
-  <div class="delivery-time-options" data="<%= SpreeDeliveryOptions::Config.delivery_time_options %>"></div>
+  <div class="delivery-time-options" data="<%= SolidusDeliveryOptions::Config.delivery_time_options %>"></div>
 
   <%= form_for @order, url: admin_order_delivery_options_url(@order) do |f| %>
     <fieldset data-hook="admin_delivery_options_form_fields" class="no-border-top">
@@ -27,7 +25,7 @@
             </div>
             <% if SolidusDeliveryOptions::Config.delivery_time_enabled %>
               <div class="field">
-                <% delivery_options = JSON.parse(SpreeDeliveryOptions::Config.delivery_time_options)[(@order.delivery_date || Date.today).strftime('%A').downcase] %>
+                <% delivery_options = JSON.parse(SolidusDeliveryOptions::Config.delivery_time_options)[(@order.delivery_date || Date.today).strftime('%A').downcase] %>
                 <div class="selected-delivery-time" data="<%= @order.delivery_time %>"></div>
                 <%= f.label :delivery_time, 'Delivery Time' %>
                 <%= f.select :delivery_time, delivery_options || '' %>
