@@ -23,7 +23,7 @@ module SolidusDeliveryOptions
 
     config.to_prepare &method(:activate).to_proc
 
-    initializer 'spree.delivery_options.preferences', after: 'spree.environment' do |_app|
+    initializer 'spree.delivery_options.environment', before: :load_config_initializers do |_app|
       SolidusDeliveryOptions::Config = Spree::DeliveryOptionsConfiguration.new
     end
   end

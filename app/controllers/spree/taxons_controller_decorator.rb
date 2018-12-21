@@ -1,6 +1,10 @@
 module Spree
   module TaxonsControllerDecorator
-    helper 'solidus_delivery_options/base'
+    class << self
+      def prepended(klass)
+        klass.helper 'solidus_delivery_options/base'
+      end
+    end
   end
 end
 

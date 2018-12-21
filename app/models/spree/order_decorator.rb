@@ -5,7 +5,11 @@ module Spree
 
     include SolidusDeliveryOptions::DeliveryOptionsService
 
-    validate :valid_delivery_options?
+    class << self
+      def prepended(klass)
+        klass.validate :valid_delivery_options?
+      end
+    end
 
     def valid_delivery_instructions?
       if delivery_instructions && delivery_instructions.length > 500
@@ -21,6 +25,8 @@ module Spree
     end
 
     def delivery_time_present?
+      return if delivery_date_present?
+
       errors[:delivery_time] << I18n.t('activerecord.errors.messages.blank') unless delivery_time
       errors[:delivery_time].empty?
     end
@@ -37,7 +43,7 @@ module Spree
         end
       end
 
-      errors[:delivery_date].empty? && errors[:delivery_time].empty? ? true : false
+      errors[:delivery_date].empty? && errors[:delivery_time].empty?
     end
   end
 end

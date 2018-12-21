@@ -1,12 +1,14 @@
-<dt><%= t(:delivery_date) %>:</dt>
+<dt><%= t('activerecord.attributes.spree/order.delivery_date') %>:</dt>
 <% if @order.delivery_date != nil %>
   <dd id='delivery_date'><%= l(@order.delivery_date) %></dd>
 <% else %>
   <dd id='delivery_date'>Unknown</dd>
 <% end %>
-<dt><%= t(:delivery_time) %>:</dt>
-<% if @order.delivery_time != nil %>
-  <dd id='delivery_time'><%= @order.delivery_time %></dd>
-<% else %>
-  <dd id='delivery_time'>Unknown</dd>
+<% if SolidusDeliveryOptions::Config.delivery_time_enabled %>
+  <dt><%= t('activerecord.attributes.spree/order.delivery_date') %>:</dt>
+  <% if @order.delivery_time != nil %>
+    <dd id='delivery_time'><%= @order.delivery_time %></dd>
+  <% else %>
+    <dd id='delivery_time'>Unknown</dd>
+  <% end %>
 <% end %>

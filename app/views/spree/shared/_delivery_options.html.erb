@@ -1,0 +1,50 @@
+<% if SolidusDeliveryOptions::Config.show_homepage_form %>
+  <div id="delivery-options-homepage">
+    <% order = current_order(create_order_if_necessary: true) %>
+    <% if order.delivery_date? && order.delivery_time %>
+      <div class="row success">
+        <div class="columns sixteen alpha omega">
+          <h5>
+            <%= "Thanks! Your order is scheduled for #{order.delivery_date.strftime('%A, %d %b')} from #{order.delivery_time}." %>
+            <%= " You just need to complete it by #{current_order_cutoff_time}" %>
+          </h5>
+          <p>You can still change it at the checkout if needed.</p>
+        </div>
+      </div>
+    <% else %>
+      <div class="row form">
+        <div class="columns seven alpha">
+          <h3>Want to know when you're getting your groceries?</h3>
+          <h5>Choose your FREE* delivery time and get it sorted now</h5>
+        </div>
+        <div class="columns four">
+          <%= form_for order, url: api_order_url(order), html: { id: 'delivery-options-form' } do |form| %>
+            <%= hidden_field_tag 'order_token', order.token %>
+            <div class="field">
+              <%= form.label :delivery_date, 'Delivery Date' %>
+              <%= form.text_field :delivery_date, value: (l(order.delivery_date) rescue l(Date.current + 1)) %>
+            </div>
+            <% if SolidusDeliveryOptions::Config.delivery_time_enabled %>
+              <div class="field">
+                <%= form.label :delivery_time, 'Delivery Time' %>
+                <%= form.select :delivery_time, current_delivery_options_for_date(Date.tomorrow) %>
+              </div>
+            <% end %>
+            <div class="field">
+              <%= form.submit 'Set Delivery Time' %>
+            </div>
+            <div class="delivery-time-options" data="<%= SolidusDeliveryOptions::Config.delivery_time_options %>"></div>
+          <% end %>
+        </div>
+        <div class="columns four omega">
+          <h5>
+            The next available delivery slot is
+            <%= next_delivery_slot %>
+          </h5>
+          <div class="error hide"></div>
+          <p class="delivery_t_and_c">* On your first order or any order above $30</p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>

@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.name = 'solidus_delivery_options'
-  s.version = '2.2.11'
+  s.version = '2.2.12'
   s.summary = 'Adds delivery date and time during checkout'
   s.description = ''
   s.required_ruby_version = '>= 2.0.0'
@@ -16,8 +16,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'solidus_core', '>= 1.0.0', '< 3'
   s.add_dependency 'solidus_support'
-
-  s.add_runtime_dependency 'haml'
+  s.add_dependency 'deface', '~> 1.0'
 
   s.add_development_dependency 'capybara', '~> 2.1'
   s.add_development_dependency 'database_cleaner'
